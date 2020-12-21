@@ -150,7 +150,7 @@ usersController.forgetPasswordEmail = async (req, res) => {
     }
   });
 };
-usersController.forgetPassword = async (req, res) => {
+usersController.resetPassword = async (req, res) => {
   try {
     const _id = req.params._id;
     const updates = req.body;
