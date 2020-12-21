@@ -1,13 +1,13 @@
 const mongoose = require("mongoose");
 const mongoosePaginate = require("mongoose-paginate");
-const shortid = require("shortid");
+var autoIncrement = require("mongoose-auto-increment");
+autoIncrement.initialize(mongoose.connection);
 
 const Schema = mongoose.Schema;
 
 const User = new Schema({
   _id: {
     type: String,
-    default: shortid.generate,
   },
   name: {
     type: String,
@@ -22,17 +22,28 @@ const User = new Schema({
   },
   phone: {
     type: String,
+    unique: true,
+    sparse: true,
   },
   access: {
     type: String,
-    default: "customer",
+    default: "User",
   },
-  notificationToken: {
-    type: String,
+  emailVerified:{
+    type:Boolean,
+    default: false
   },
+  phoneVerified:{
+    type:Boolean,
+    default: false
+  },
+  userName:{
+    type:String
+  }
 });
 
 User.plugin(mongoosePaginate);
+User.plugin(autoIncrement.plugin, "User");
 
 User.methods.toJSON = function () {
   var obj = this.toObject();

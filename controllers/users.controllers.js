@@ -2,6 +2,7 @@ const usersController = {};
 const Users = require("../models/users.model");
 const bcrypt = require("bcryptjs");
 const jsonwebtoken = require("jsonwebtoken");
+var nodemailer = require("nodemailer");
 
 usersController.registerUser = async (req, res) => {
   try {
@@ -33,37 +34,55 @@ usersController.registerUser = async (req, res) => {
     }
   }
 };
-
 usersController.loginUser = async (req, res) => {
   try {
+   let query
     const body = req.body;
     const email = body.email;
-    // lets check if email exists
-    const result = await Users.findOne({ email: email });
-    if (!result) {
-      // this means result is null
-      res.status(401).send({
-        message: "This user does not exists. Please signup first",
-      });
-    } else {
-      // email did exist
-      // so lets match password
-      if (bcrypt.compareSync(body.password, result.password)) {
-        // great, allow this user access
-        result.password = undefined;
-        const token = jsonwebtoken.sign(
-          {
-            data: result,
-            role: "User",
-          },
-          "supersecretToken",
-          { expiresIn: "7d" }
-        );
-        res.send({ message: "Successfully Logged in", token: token });
-      } else {
-        res.status(401).send({ message: "Wrong email or Password" });
-      }
+    const phone = body.phone;
+    const userName = body.userName;
+
+    if(email && !phone && !userName){
+      query={email:email};
     }
+    if(!email && phone && !userName){
+      query={phone:phone};
+    }
+    if(!email && !phone && userName){
+      query={userName:userName};
+    }
+      const result = await Users.findOne(query);
+      if (!result) {
+        res.status(401).send({
+          message: "This user does not exists. Please signup first",
+        });
+      } 
+      else if(result){
+        if (bcrypt.compareSync(body.password, result.password)) {
+          result.password = undefined;
+          const token = jsonwebtoken.sign(
+            {
+              data: result,
+              role: "User",
+            },
+            "supersecretToken",
+            { expiresIn: "7d" }
+          );
+          res.send({ message: "Successfully Logged in", token: token });
+        } else {
+          if(phone&&!email&&!userName){
+            res.status(401).send({ message: "Wrong phone or password" });
+          }
+          if(email&&!phone&&!userName){
+            res.status(401).send({ message: "Wrong email or password" });
+            
+          }
+          if(userName&&!email&&!phone){
+            res.status(401).send({ message: "Wrong username or password" });
+            
+          }
+        }
+      } 
   } catch (error) {
     return res.status(500).send(error);
   }
@@ -96,17 +115,70 @@ async function runUpdate(_id, updates, res) {
         runValidators: true,
       }
     );
-    {
-      if (result.nModified == 1) {
-        res.status(200).send({
-          code: 200,
-          message: "Updated Successfully",
-        });
-      }
-    }
+    res.status(200).send({
+      code: 200,
+      message: "Updated Successfully",
+    });
   } catch (error) {
     return res.status(500).send(error);
   }
-}
+};
+usersController.forgetPasswordEmail = async (req, res) => {
 
+  const userEmail = req.body.email;
+  const message = "Please don't share this link with anyone! <br> <href>localhost:3000/users/reset_email";
+  var transporter = nodemailer.createTransport({
+    service: "gmail.com",
+    auth: {
+      user: "ebusiness.auth.verify@gmail.com",
+      pass: "ebusiness@56",
+    },
+  });
+  var mailOptions = {
+    from: "ebusiness.auth.verify@gmail.com",
+    to: userEmail,
+    subject: "Rest Password",
+    html: `${message}`,
+  };
+
+  transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      console.log(error);
+      res.status(500).send({
+        message: "Email not sent",
+        error: error,
+      });
+    } else {
+      console.log("Email sent: " + info.response);
+      res.status(200).send({
+        message: "Email sent",
+        info: info,
+      });
+    }
+  });
+};
+usersController.forgetPassword = async (req, res) => {
+ try {
+   const _id = req.params._id
+  const updates = req.body;
+  const updated = await Users.findOne({
+    _id: _id,
+  });
+  const password = updates.password;
+  var salt = bcrypt.genSaltSync(10);
+  var hash = bcrypt.hashSync(password, salt);
+  updated.password = hash;
+  const user = updated;
+  const result = await user.save();
+
+ res.status(200).send({
+  code: 200,
+  message: "Reset password successfully",
+});
+ } catch (error) {
+  return res.status(500).send(error);
+   
+ }
+
+};
 module.exports = usersController;
