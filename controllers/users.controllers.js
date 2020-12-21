@@ -36,53 +36,46 @@ usersController.registerUser = async (req, res) => {
 };
 usersController.loginUser = async (req, res) => {
   try {
-   let query
-    const body = req.body;
-    const email = body.email;
-    const phone = body.phone;
-    const userName = body.userName;
-
-    if(email && !phone && !userName){
-      query={email:email};
+    const { userEmailPhone, password } = req.body;
+    const result = await Users.findOne({
+      $or: [
+        {
+          email: userEmailPhone,
+        },
+        {
+          phone: userEmailPhone,
+        },
+        {
+          userName: userEmailPhone,
+        },
+      ],
+    }); 
+    if (!result) {
+      res.status(401).send({
+        message: "This user does not exists. Please signup first",
+      });
     }
-    if(!email && phone && !userName){
-      query={phone:phone};
-    }
-    if(!email && !phone && userName){
-      query={userName:userName};
-    }
-      const result = await Users.findOne(query);
-      if (!result) {
-        res.status(401).send({
-          message: "This user does not exists. Please signup first",
+     else if (result) {
+      if (bcrypt.compareSync(password, result.password)) {
+        result.password = undefined;
+        const token = jsonwebtoken.sign(
+          {
+            data: result,
+            role: "User",
+          },
+          "supersecretToken",
+          { expiresIn: "7d" }
+        );
+        res.send({ 
+          message: "Successfully Logged in", token: token 
         });
       } 
-      else if(result){
-        if (bcrypt.compareSync(body.password, result.password)) {
-          result.password = undefined;
-          const token = jsonwebtoken.sign(
-            {
-              data: result,
-              role: "User",
-            },
-            "supersecretToken",
-            { expiresIn: "7d" }
-          );
-          res.send({ message: "Successfully Logged in", token: token });
-        } else {
-          if(phone&&!email&&!userName){
-            res.status(401).send({ message: "Wrong phone or password" });
-          }
-          if(email&&!phone&&!userName){
-            res.status(401).send({ message: "Wrong email or password" });
-            
-          }
-          if(userName&&!email&&!phone){
-            res.status(401).send({ message: "Wrong username or password" });
-            
-          }
-        }
-      } 
+      else {
+          res.status(401).send({ 
+            message: "Wrong username or password" 
+          });
+      }
+    }
   } catch (error) {
     return res.status(500).send(error);
   }
@@ -122,11 +115,11 @@ async function runUpdate(_id, updates, res) {
   } catch (error) {
     return res.status(500).send(error);
   }
-};
+}
 usersController.forgetPasswordEmail = async (req, res) => {
-
   const userEmail = req.body.email;
-  const message = "Please don't share this link with anyone! <br> <href>localhost:3000/users/reset_email";
+  const message =
+    "Please don't share this link with anyone! <br> <href>localhost:3000/users/reset_email";
   var transporter = nodemailer.createTransport({
     service: "gmail.com",
     auth: {
@@ -158,27 +151,25 @@ usersController.forgetPasswordEmail = async (req, res) => {
   });
 };
 usersController.forgetPassword = async (req, res) => {
- try {
-   const _id = req.params._id
-  const updates = req.body;
-  const updated = await Users.findOne({
-    _id: _id,
-  });
-  const password = updates.password;
-  var salt = bcrypt.genSaltSync(10);
-  var hash = bcrypt.hashSync(password, salt);
-  updated.password = hash;
-  const user = updated;
-  const result = await user.save();
+  try {
+    const _id = req.params._id;
+    const updates = req.body;
+    const updated = await Users.findOne({
+      _id: _id,
+    });
+    const password = updates.password;
+    var salt = bcrypt.genSaltSync(10);
+    var hash = bcrypt.hashSync(password, salt);
+    updated.password = hash;
+    const user = updated;
+    const result = await user.save();
 
- res.status(200).send({
-  code: 200,
-  message: "Reset password successfully",
-});
- } catch (error) {
-  return res.status(500).send(error);
-   
- }
-
+    res.status(200).send({
+      code: 200,
+      message: "Reset password successfully",
+    });
+  } catch (error) {
+    return res.status(500).send(error);
+  }
 };
 module.exports = usersController;
