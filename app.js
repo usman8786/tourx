@@ -11,6 +11,15 @@ const cors = require("cors");
 const formData = require("express-form-data");
 const bodyParser = require("body-parser");
 const fs = require("fs");
+
+app.use(
+  bodyParser.urlencoded({
+    extended: true,
+  })
+);
+
+app.use(bodyParser.json());
+
 const UsersRoutes = require("./routes/users.routes");
 
 // connection to mongoose
@@ -25,21 +34,6 @@ fs.readdirSync(__dirname + "/models").forEach(function (file) {
   require(__dirname + "/models/" + file);
 });
 
-
-app.use(cors());
-app.use(formData.parse());
-app.use("/users", UsersRoutes);
-app.use(
-  bodyParser.urlencoded({
-    extended: true,
-  })
-);
-
-app.use(bodyParser.json());
-app.use(errorHandler);
-app.use(errorMessage);
-app.use(accessControls);
-
 // in case you want to serve images
 app.use(express.static("public"));
 app.get("/", function (req, res) {
@@ -48,6 +42,14 @@ app.get("/", function (req, res) {
   });
 });
 
+app.use(cors());
+app.use(formData.parse());
+
+app.use("/users", UsersRoutes);
+
+app.use(errorHandler);
+app.use(errorMessage);
+app.use(accessControls);
 
 app.set("port", process.env.PORT);
 server.listen(app.get("port"));
