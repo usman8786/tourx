@@ -21,6 +21,7 @@ app.use(
 app.use(bodyParser.json());
 
 const UsersRoutes = require("./routes/users.routes");
+const PostRoutes = require("./routes/post.routes");
 
 // connection to mongoose
 const mongoCon = process.env.mongoCon;
@@ -46,6 +47,8 @@ app.use(cors());
 app.use(formData.parse());
 
 app.use("/users", UsersRoutes);
+app.use("/post", PostRoutes);
+
 
 app.use(errorHandler);
 app.use(errorMessage);
