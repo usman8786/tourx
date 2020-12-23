@@ -39,7 +39,7 @@ postController.getPostById = async (req, res) => {
 postController.getPostByUserId = async (req, res) => {
   try {
     const id = req.params.id
-    const result = await Post.findOne({userId: id});
+    const result = await Post.find({userId: id});
     res.status(200).send({
       message: "Getting posts by userId from server",
       posts: result,
