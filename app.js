@@ -47,7 +47,7 @@ app.use(cors());
 app.use(formData.parse());
 
 app.use("/users", UsersRoutes);
-app.use("/post", PostRoutes);
+app.use("/posts", PostRoutes);
 
 
 app.use(errorHandler);

@@ -24,6 +24,30 @@ postController.addPost = async (req, res) => {
     return res.status(500).send(error);
   }
 };
+postController.getPostById = async (req, res) => {
+  try {
+    const _id = req.params._id
+    const result = await Post.findOne({_id: _id});
+    res.status(200).send({
+      message: "Getting posts by id from server",
+      posts: result,
+    });
+  } catch (error) {
+    return res.status(500).send(error);
+  }
+};
+postController.getPostByUserId = async (req, res) => {
+  try {
+    const id = req.params.id
+    const result = await Post.findOne({userId: id});
+    res.status(200).send({
+      message: "Getting posts by userId from server",
+      posts: result,
+    });
+  } catch (error) {
+    return res.status(500).send(error);
+  }
+};
 postController.updatePost = async (req, res) => {
   if (!req.params._id) {
     res.status(500).send({
