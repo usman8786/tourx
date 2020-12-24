@@ -197,7 +197,7 @@ usersController.sendCodeToEmail = async (req, res) => {
 async function sendMessage(random6DigitCode, userEmail, userId, res) {
   try {
     const message =
-    `<h2>Please don't share this code with anyone!</h2><br><b>${random6DigitCode}</b><br> Enter this code in your TripChala app to verify your email.`;
+    `<h1>Please don't share this code with anyone!</h1><br><h2>${random6DigitCode}</h2><br><h1>Enter this code in your TripChala app to verify your email.</h1>`;
   var transporter = nodemailer.createTransport({
     service: "gmail.com",
     auth: {
