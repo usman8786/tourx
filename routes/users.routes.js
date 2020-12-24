@@ -9,7 +9,7 @@ router.post("/register", UserController.registerUser);
 router.put("/:_id", UserController.updateUser);
 router.put("/reset_password/:_id", UserController.resetPassword);
 router.post("/reset_email", UserController.forgetPasswordEmail);
-
+router.get("/sendcode_email/:_id", UserController.sendCodeToEmail);
 
 
 module.exports = router;

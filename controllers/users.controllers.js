@@ -1,5 +1,6 @@
 const usersController = {};
 const Users = require("../models/users.model");
+const Verification = require("../models/verification.model");
 const bcrypt = require("bcryptjs");
 const jsonwebtoken = require("jsonwebtoken");
 var nodemailer = require("nodemailer");
@@ -170,6 +171,65 @@ usersController.resetPassword = async (req, res) => {
     });
   } catch (error) {
     return res.status(500).send(error);
+  }
+};
+usersController.sendCodeToEmail = async (req, res) => {
+  const userId = req.params._id
+  const token = jsonwebtoken.sign({}, "SecretjwtKey", { expiresIn: "1d" });
+  var random6DigitCode = Math.floor(100000 + Math.random() * 900000);
+  const userEmail = req.body.email;
+  var body = {
+    token: token,
+    verificationCode: random6DigitCode,
+    userId: userId,
+  };
+  const verificationCode = new Verification(body);
+    const code = await Verification.findOneAndDelete({ userId: userId });
+    if (code) {
+      const newCode = await verificationCode.save();
+      await sendMessage(newCode.verificationCode, userEmail, userId, res);
+    } else if (!code) {
+      const new1Code = await verificationCode.save();
+      await sendMessage(new1Code.verificationCode, userEmail, userId, res);
+    };
+};
+
+async function sendMessage(random6DigitCode, userEmail, userId, res) {
+  try {
+    const message =
+    `<h3>Please don't share this code with anyone!</h3> <br> <b>${random6DigitCode}</b> <br> Enter this code in your TripChala app to verify your email.`;
+  var transporter = nodemailer.createTransport({
+    service: "gmail.com",
+    auth: {
+      user: "ebusiness.auth.verify@gmail.com",
+      pass: "ebusiness@56",
+    },
+  });
+  var mailOptions = {
+    from: "ebusiness.auth.verify@gmail.com",
+    to: userEmail,
+    subject: "Verify Your Email",
+    html: `${message}`,
+  };
+  transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      console.log(error);
+      res.status(500).send({
+        message: "Email not sent",
+        error: error,
+      });
+    } else {
+      console.log("Email sent: " + info.response);
+      res.status(200).send({
+        message: "Verification code has been sent to your email address.",
+        id: userId,
+      });
+    }
+  });
+  } catch (error) {
+    res.status(500).send({
+      error: error,
+    });
   }
 };
 module.exports = usersController;
