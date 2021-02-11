@@ -1,0 +1,64 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "Login Register System",
+    "description": "My User Project Application API",
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  },
+  "host": "tour-x.herokuapp.com",
+  "basePath": "/",
+  "tags": [
+    {
+      "name": "Users",
+      "description": "This is a secure Login, Register and All Users API application made with Express using Node.js"
+    }
+  ],
+
+  "paths": {
+    "/users": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Get all users in system",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Users"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Users": {
+      "required": [
+        "email",
+        "_id",
+        "password"
+      ],
+      "properties": {
+        "_id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string",
+          "unique": true,
+          "sparse": true
+        },
+        "password": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

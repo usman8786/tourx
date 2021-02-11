@@ -11,7 +11,8 @@ const cors = require("cors");
 const formData = require("express-form-data");
 const bodyParser = require("body-parser");
 const fs = require("fs");
-
+const swaggerUi = require("swagger-ui-express");
+      swaggerDocument = require("./swagger.json");
 app.use(
   bodyParser.urlencoded({
     extended: true,
@@ -45,9 +46,12 @@ app.get("/", function (req, res) {
 
 app.use(cors());
 app.use(formData.parse());
+app.use("/swagger",swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use("/users", UsersRoutes);
 app.use("/posts", PostRoutes);
+
+
 
 
 app.use(errorHandler);

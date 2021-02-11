@@ -3,7 +3,7 @@ const Users = require("../models/users.model");
 const Verification = require("../models/verification.model");
 const bcrypt = require("bcryptjs");
 const jsonwebtoken = require("jsonwebtoken");
-var nodemailer = require("nodemailer");
+// var nodemailer = require("nodemailer");
 
 usersController.getAllUsers = async (req, res) => {
   try {
