@@ -5,6 +5,17 @@ const bcrypt = require("bcryptjs");
 const jsonwebtoken = require("jsonwebtoken");
 var nodemailer = require("nodemailer");
 
+usersController.getAllUsers = async (req, res) => {
+  try {
+    const result = await Users.find();
+    res.status(200).send({
+      message: "Getting all users from server",
+      users: result,
+    });
+  } catch (error) {
+    return res.status(500).send(error);
+  }
+};
 usersController.registerUser = async (req, res) => {
   try {
     const body = req.body;
@@ -50,13 +61,12 @@ usersController.loginUser = async (req, res) => {
           userName: userEmailPhone,
         },
       ],
-    }); 
+    });
     if (!result) {
       res.status(401).send({
         message: "This user does not exists. Please signup first",
       });
-    }
-     else if (result) {
+    } else if (result) {
       if (bcrypt.compareSync(password, result.password)) {
         result.password = undefined;
         const token = jsonwebtoken.sign(
@@ -67,14 +77,14 @@ usersController.loginUser = async (req, res) => {
           "supersecretToken",
           { expiresIn: "7d" }
         );
-        res.send({ 
-          message: "Successfully Logged in", token: token 
+        res.send({
+          message: "Successfully Logged in",
+          token: token,
         });
-      } 
-      else {
-          res.status(401).send({ 
-            message: "Wrong username or password" 
-          });
+      } else {
+        res.status(401).send({
+          message: "Wrong username or password",
+        });
       }
     }
   } catch (error) {
@@ -174,7 +184,7 @@ usersController.resetPassword = async (req, res) => {
   }
 };
 usersController.sendCodeToEmail = async (req, res) => {
-  const userId = req.params._id
+  const userId = req.params._id;
   const token = jsonwebtoken.sign({}, "SecretjwtKey", { expiresIn: "1d" });
   var random6DigitCode = Math.floor(100000 + Math.random() * 900000);
   const userEmail = req.body.email;
@@ -184,52 +194,51 @@ usersController.sendCodeToEmail = async (req, res) => {
     userId: userId,
   };
   const verificationCode = new Verification(body);
-    const code = await Verification.findOneAndDelete({ userId: userId });
-    if (code) {
-      const newCode = await verificationCode.save();
-      await sendMessage(newCode.verificationCode, userEmail, userId, res);
-    } else if (!code) {
-      const new1Code = await verificationCode.save();
-      await sendMessage(new1Code.verificationCode, userEmail, userId, res);
-    };
+  const code = await Verification.findOneAndDelete({ userId: userId });
+  if (code) {
+    const newCode = await verificationCode.save();
+    await sendMessage(newCode.verificationCode, userEmail, userId, res);
+  } else if (!code) {
+    const new1Code = await verificationCode.save();
+    await sendMessage(new1Code.verificationCode, userEmail, userId, res);
+  }
 };
 
 async function sendMessage(random6DigitCode, userEmail, userId, res) {
   try {
-    const message =
-    `<h2>Enter this code in your TripChala app to verify your email.</h2><h2>Code: ${random6DigitCode}</h2><br>Please don't share this code with anyone!`;
-  var transporter = nodemailer.createTransport({
-    service: "gmail.com",
-    auth: {
-      user: "ebusiness.auth.verify@gmail.com",
-      pass: "ebusiness@56",
-    },
-  });
-  var mailOptions = {
-    from: "ebusiness.auth.verify@gmail.com",
-    to: userEmail,
-    subject: "Verify Your Email",
-    html: `${message}`,
-  };
-  transporter.sendMail(mailOptions, function (error, info) {
-    if (error) {
-      console.log(error);
-      res.status(500).send({
-        message: "Email not sent",
-        error: error,
-      });
-    } else {
-      console.log("Email sent: " + info.response);
-      res.status(200).send({
-        message: "Verification code has been sent to your email address.",
-        id: userId,
-      });
-    }
-  });
+    const message = `<h2>Enter this code in your TripChala app to verify your email.</h2><h2>Code: ${random6DigitCode}</h2><br>Please don't share this code with anyone!`;
+    var transporter = nodemailer.createTransport({
+      service: "gmail.com",
+      auth: {
+        user: "ebusiness.auth.verify@gmail.com",
+        pass: "ebusiness@56",
+      },
+    });
+    var mailOptions = {
+      from: "ebusiness.auth.verify@gmail.com",
+      to: userEmail,
+      subject: "Verify Your Email",
+      html: `${message}`,
+    };
+    transporter.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        console.log(error);
+        res.status(500).send({
+          message: "Email not sent",
+          error: error,
+        });
+      } else {
+        console.log("Email sent: " + info.response);
+        res.status(200).send({
+          message: "Verification code has been sent to your email address.",
+          id: userId,
+        });
+      }
+    });
   } catch (error) {
     res.status(500).send({
       error: error,
     });
   }
-};
+}
 module.exports = usersController;
