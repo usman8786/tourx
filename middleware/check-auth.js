@@ -8,7 +8,7 @@ module.exports = (req, res, next) => {
         next();
     } catch (error) {
         next({
-            message: 'Auth failed',
+            message: 'Authorization Failed, Login or Register first!',
             status: 401
         });
     }
