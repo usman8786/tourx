@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.0.0",
+    "version": "2.1",
     "title": "Login Register System",
     "description": "My User Project Application API",
     "license": {
@@ -9,7 +9,7 @@
       "url": "https://opensource.org/licenses/MIT"
     }
   },
-  "host": "tour-x.herokuapp.com",
+  "host": "https://tour-x.herokuapp.com",
   "basePath": "/",
   "tags": [
     {
