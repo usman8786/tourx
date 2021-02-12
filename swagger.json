@@ -179,18 +179,6 @@
         "phone": {
           "type": "string"
         },
-        "access": {
-          "type": "string",
-          "default": "User"
-        },
-        "emailVerified": {
-          "type": "boolean",
-          "default": false
-        },
-        "phoneVerified": {
-          "type": "boolean",
-          "default": false
-        },
         "userName": {
           "type": "string"
         }
