@@ -46,14 +46,10 @@ app.get("/", function (req, res) {
 
 app.use(cors());
 app.use(formData.parse());
-app.use("/users", UsersRoutes);
-app.use("/posts", PostRoutes);
 app.use("/swagger",swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-
-
-
-
+app.use("/users", UsersRoutes);
+app.use("/posts", PostRoutes);
 
 app.use(errorHandler);
 app.use(errorMessage);
