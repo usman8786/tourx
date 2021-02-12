@@ -9,6 +9,7 @@ module.exports = (req, res, next) => {
     } catch (error) {
         next({
             message: 'Authorization Failed, Login or Register first!',
+            SwaggerTesting:"If you can't access all users, Use Postman with Authorization header from User Login Token",
             status: 401
         });
     }
