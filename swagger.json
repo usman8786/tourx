@@ -9,7 +9,7 @@
       "url": "https://opensource.org/licenses/MIT"
     }
   },
-  "host": "https://tour-x.herokuapp.com",
+  "host": "tour-x.herokuapp.com",
   "basePath": "/",
   "tags": [
     {
