@@ -26,7 +26,13 @@
         "summary": "Get all users in system",
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Getting All Users",
+            "schema": {
+              "$ref": "#/definitions/Users"
+            }
+          },
+          "401": {
+            "description": "Authorization Failed, Login or Register first!",
             "schema": {
               "$ref": "#/definitions/Users"
             }
