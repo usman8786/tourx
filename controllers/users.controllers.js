@@ -25,7 +25,7 @@ usersController.registerUser = async (req, res) => {
     body.password = hash;
     const user = new Users(body);
     const result = await user.save();
-    res.send({
+    res.status(200).send({
       message: "Signup successful",
       userData: result,
     });
@@ -77,7 +77,7 @@ usersController.loginUser = async (req, res) => {
           "supersecretToken",
           { expiresIn: "7d" }
         );
-        res.send({
+        res.status(200).send({
           message: "Successfully Logged in",
           token: token,
         });

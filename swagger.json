@@ -17,7 +17,15 @@
       "description": "This is a secure Login, Register and All Users API application made with Express using Node.js"
     }
   ],
-
+  "schemes": [
+    "http"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
   "paths": {
     "/users": {
       "get": {
@@ -34,6 +42,88 @@
           }
         }
       }
+    },
+    "/users/register": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "description": "Create new user in system",
+        "parameters": [
+          {
+            "name": "user",
+            "in": "body",
+            "description": "User that we want to create",
+            "schema": {
+              "$ref": "#/definitions/register"
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "User logged in successfully",
+            "schema": {
+              "$ref": "#/definitions/Users"
+            }
+          },
+          "401": {
+            "description": "Wrong username or password",
+            "schema": {
+              "$ref": "#/definitions/Users"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Users"
+            }
+          }
+        }
+      }
+    },
+    "/users/login": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "description": "login a user in system",
+        "parameters": [
+          {
+            "name": "user",
+            "in": "body",
+            "description": "User that we want to login",
+            "schema": {
+              "$ref": "#/definitions/login"
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "User logged in successfully",
+            "schema": {
+              "$ref": "#/definitions/Users"
+            }
+          },
+          "401": {
+            "description": "Wrong username or password",
+            "schema": {
+              "$ref": "#/definitions/Users"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Users"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -44,16 +134,79 @@
         "password"
       ],
       "properties": {
-        "_id": {
-          "type": "string"
-        },
         "name": {
           "type": "string"
         },
         "email": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "access": {
           "type": "string",
-          "unique": true,
-          "sparse": true
+          "default": "User"
+        },
+        "emailVerified": {
+          "type": "boolean",
+          "default": false
+        },
+        "phoneVerified": {
+          "type": "boolean",
+          "default": false
+        },
+        "userName": {
+          "type": "string"
+        }
+      }
+    },
+    "register": {
+      "required": [
+        "email",
+        "password",
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "access": {
+          "type": "string",
+          "default": "User"
+        },
+        "emailVerified": {
+          "type": "boolean",
+          "default": false
+        },
+        "phoneVerified": {
+          "type": "boolean",
+          "default": false
+        },
+        "userName": {
+          "type": "string"
+        }
+      }
+    },
+    "login": {
+      "required": [
+        "email",
+        "password"
+      ],
+      "properties": {
+        "email": {
+          "type": "string"
         },
         "password": {
           "type": "string"
