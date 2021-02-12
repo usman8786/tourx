@@ -1,16 +1,31 @@
 {
   "swagger": "2.0",
   "info": {
+    
     "version": "2.1",
     "title": "Login Register System",
-    "description": "My User Project Application API",
+    "description": "Moyyn Task Application API",
     "license": {
       "name": "MIT",
-      "url": "https://opensource.org/licenses/MIT"
+      "url": "https://spdx.org/licenses/MIT.html"
+    },
+    "contact": {
+      "name": "Muhammad Usman",
+      "url": "https://www.linkedin.com/in/muhammad-usman111/"
     }
   },
   "host": "tour-x.herokuapp.com",
   "basePath": "/",
+  "schemes": [
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  
   "tags": [
     {
       "name": "Users",
@@ -32,7 +47,7 @@
             }
           },
           "401": {
-            "description": "Authorization Failed, Login or Register first!",
+            "description": "Authorization Failed, if you still can't use Postman with authorization header from login user Token",
             "schema": {
               "$ref": "#/definitions/Users"
             }
