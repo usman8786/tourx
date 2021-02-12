@@ -17,15 +17,6 @@
       "description": "This is a secure Login, Register and All Users API application made with Express using Node.js"
     }
   ],
-  "schemes": [
-    "http"
-  ],
-  "consumes": [
-    "application/json"
-  ],
-  "produces": [
-    "application/json"
-  ],
   "paths": {
     "/users": {
       "get": {
